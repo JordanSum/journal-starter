@@ -70,7 +70,6 @@ async def get_entry(entry_id: str, entry_service: EntryService = Depends(get_ent
 
     Hint: Check the update_entry endpoint for similar patterns
     """
-    raise HTTPException(status_code=501, detail="Not implemented - complete this endpoint!")
 
 @router.patch("/entries/{entry_id}")
 async def update_entry(entry_id: str, entry_update: dict, entry_service: EntryService = Depends(get_entry_service)):
@@ -86,6 +85,15 @@ async def update_entry(entry_id: str, entry_update: dict, entry_service: EntrySe
 # Return 404 if entry not found
 @router.delete("/entries/{entry_id}")
 async def delete_entry(entry_id: str, entry_service: EntryService = Depends(get_entry_service)):
+    result = await entry_service.get_entry(entry_id)
+    if not result:
+        raise HTTPException(status_code=404)
+    
+    else:
+        await entry_service.delete_entry(entry_id)
+
+        return HTTPException(status_code=200, detail="success")
+    
     """
     TODO: Implement this endpoint to delete a specific journal entry
 
