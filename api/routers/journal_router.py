@@ -47,12 +47,8 @@ async def get_all_entries(entry_service: EntryService = Depends(get_entry_servic
 async def get_entry(entry_id: str, entry_service: EntryService = Depends(get_entry_service)):
     result = await entry_service.get_entry(entry_id)
     if not result:
-
-        raise HTTPException(status_code=404)
-    
+        raise HTTPException(status_code=404, detail="Entry not found")
     return result
-    
-    raise HTTPException(status_code=501, detail="Not implemented - complete this endpoint!")
     
     """
     TODO: Implement this endpoint to return a single journal entry by ID

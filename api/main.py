@@ -21,7 +21,7 @@ console_handler = logging.StreamHandler()
 console_handler.setLevel(logging.INFO)
 logger.addHandler(console_handler)
 
-logger.info("Starting your journal API")
+logger.info("Starting your journal API, have fun!")
 
 app = FastAPI(title="Journal API", description="A simple journal API for tracking daily work, struggles, and intentions")
 app.include_router(journal_router)
