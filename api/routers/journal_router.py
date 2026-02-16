@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from api.models.entry import Entry, EntryCreate
 from api.repositories.postgres_repository import PostgresDB
+from api.services import llm_service
 from api.services.entry_service import EntryService
 
 router = APIRouter()
@@ -49,7 +50,6 @@ async def get_entry(entry_id: str, entry_service: EntryService = Depends(get_ent
     if not result:
         raise HTTPException(status_code=404, detail="Entry not found")
     return result
-    
     """
     TODO: Implement this endpoint to return a single journal entry by ID
 
@@ -88,12 +88,10 @@ async def delete_entry(entry_id: str, entry_service: EntryService = Depends(get_
     result = await entry_service.get_entry(entry_id)
     if not result:
         raise HTTPException(status_code=404)
-    
     else:
         await entry_service.delete_entry(entry_id)
 
         return HTTPException(status_code=200, detail="success")
-    
     """
     TODO: Implement this endpoint to delete a specific journal entry
 
@@ -118,6 +116,17 @@ async def delete_all_entries(entry_service: EntryService = Depends(get_entry_ser
 
 @router.post("/entries/{entry_id}/analyze")
 async def analyze_entry(entry_id: str, entry_service: EntryService = Depends(get_entry_service)):
+
+    result = await entry_service.get_entry(entry_id)
+
+    if not result:
+        raise HTTPException(status_code=404, detail="Entry not found")
+    entry_text = f"Work: {result['work']}\nStruggle: {result['struggle']}\nIntention: {result['intention']}"
+
+    analysis = await llm_service.analyze_journal_entry(entry_id, entry_text)
+
+    return analysis
+
     """
     Analyze a journal entry using AI.
 
