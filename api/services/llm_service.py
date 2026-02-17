@@ -2,7 +2,6 @@
 # TODO: Import your chosen LLM SDK
 import json
 import os
-from datetime import datetime
 
 from dotenv import load_dotenv
 from openai import AzureOpenAI
