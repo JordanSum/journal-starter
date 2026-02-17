@@ -1,7 +1,7 @@
 from datetime import UTC, datetime
 from uuid import uuid4
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 class AnalysisResponse(BaseModel):
@@ -35,6 +35,20 @@ class EntryCreate(BaseModel):
     )
 
 class Entry(BaseModel):
+    schema_version: int = Field(default=1, description="Schema version for the Entry model")
+    @field_validator('work', 'struggle', 'intention')
+    @classmethod
+    def must_not_be_empty(cls, v: str) -> str:
+        if not v or not v.strip():
+            raise ValueError("Field cannot be empty or whitespace")
+        return v.strip()
+    @field_validator('work', 'struggle', 'intention', mode='before')
+    @classmethod
+    def strip_whitespace(cls, v: str) -> str:
+        if isinstance(v, str):
+            return v.strip()
+        return v
+
     # TODO: Add field validation rules
     # TODO: Add custom validators
     # TODO: Add schema versioning
