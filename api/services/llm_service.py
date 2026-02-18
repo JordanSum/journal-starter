@@ -1,14 +1,10 @@
 
-# TODO: Import your chosen LLM SDK
 import json
 import os
+from datetime import UTC, datetime
 
 from dotenv import load_dotenv
 from openai import AzureOpenAI
-
-# import anthropic
-# import boto3
-# from google.cloud import aiplatform
 
 
 async def analyze_journal_entry(entry_id: str, entry_text: str) -> dict:
@@ -63,4 +59,5 @@ Return ONLY valid JSON, no additional text."""
         "sentiment": analysis.get("sentiment", "neutral"),
         "summary": analysis.get("summary", ""),
         "topics": analysis.get("topics", []),
+        "created_at": datetime.now(UTC),
     }
