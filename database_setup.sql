@@ -33,3 +33,9 @@ CREATE INDEX IF NOT EXISTS idx_entries_data_gin ON entries USING GIN (data);
 
 -- Query the test entry
 -- SELECT * FROM entries WHERE id = 'test-123';
+
+-- To run this against your PostgreSQL database, use the following command:
+    -- Get the connection string
+        -- terraform -chdir=infra output -raw postgresql_connection_string
+    -- Run the SQL file against your database
+        -- psql "$(terraform -chdir=infra output -raw <postgresql_connection_string>)?sslmode=require" -f database_setup.sql

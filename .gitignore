@@ -169,3 +169,25 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+terraform.tfvars
+
+# Credentials and secrets
+credentials.json
+*.pem
+*.key
+
+# Local notes with sensitive info
+github-azure-connection.md
+github-azure-connection.txt
+
+# IDE
+.vscode/
+.idea/
+
+# macOS
+.DS_Store

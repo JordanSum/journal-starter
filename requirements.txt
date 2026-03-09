@@ -6,6 +6,7 @@ sqlalchemy
 psycopg2-binary
 asyncpg
 openai
+dotenv
 pytest>=9.0.2
 pytest-asyncio
 httpx

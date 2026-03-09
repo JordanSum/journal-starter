@@ -1,0 +1,1 @@
+run bash commands that check for required files, verify the Docker build, run terraform validate, and confirm Kubernetes manifests are valid YAML.
