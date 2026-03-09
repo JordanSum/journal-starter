@@ -7,6 +7,7 @@ psycopg2-binary
 asyncpg
 openai
 dotenv
+prometheus-fastapi-instrumentator
 pytest>=9.0.2
 pytest-asyncio
 httpx
