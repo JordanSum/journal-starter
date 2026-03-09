@@ -4,23 +4,19 @@ FROM python:3.12-slim
 # Install UV
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 
-WORKDIR /app 
+WORKDIR /app
 
-# Copy requirements file
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy dependency files first
+# Copy dependency files first (for layer caching)
 COPY pyproject.toml uv.lock ./
 
-#Install dependencies using UV
+# Install dependencies using UV
 RUN uv sync --frozen --no-dev
 
 # Copy application code
 COPY api/ ./api/
 
 # Set PYTHONPATH so imports resolve
-ENV PYTHONPATH=:/app
+ENV PYTHONPATH=/app
 
 EXPOSE 8000
 
