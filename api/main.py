@@ -17,3 +17,9 @@ logger.info("Starting your journal API, have fun!")
 
 app = FastAPI(title="Journal API", description="A simple journal API for tracking daily work, struggles, and intentions")
 app.include_router(journal_router)
+
+
+@app.get("/health")
+def health_check():
+    """Health check endpoint for Kubernetes probes."""
+    return {"status": "healthy"}
