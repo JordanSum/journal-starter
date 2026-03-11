@@ -27,7 +27,7 @@ resource "azurerm_subnet" "subnet" {
   }
 }
 resource "azurerm_private_dns_zone" "private-dns" {
-  name                = "example.postgres.database.azure.com"
+  name                = "privatedns.postgres.database.azure.com"
   resource_group_name = azurerm_resource_group.rg.name
 }
 
