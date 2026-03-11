@@ -8,3 +8,14 @@ variable "pip" {
     type = string
   
 }
+
+variable "psqlusername" {
+  description = "The PostgreSQL admin username"
+  type        = string
+}
+
+variable "psqlpassword" {
+  description = "The PostgreSQL admin password"
+  type        = string
+  sensitive   = true
+}

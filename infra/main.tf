@@ -80,8 +80,8 @@ resource "azurerm_postgresql_flexible_server" "fs" {
   location                      = azurerm_resource_group.rg.location
   version                       = "15"
   public_network_access_enabled = true
-  administrator_login           = "psqladmin"
-  administrator_password        = "thisisatest1234"
+  administrator_login           = var.psqlusername
+  administrator_password        = var.psqlpassword
 
   storage_mb   = 32768
   storage_tier = "P4"

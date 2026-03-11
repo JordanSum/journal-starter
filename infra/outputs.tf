@@ -13,11 +13,13 @@ output "postgresql_username" {
 
 output "postgresql_password" {
   value = azurerm_postgresql_flexible_server.fs.administrator_password
+  sensitive = true
 }
 
 output "postgresql_connection_string" {
   value = "postgresql://${azurerm_postgresql_flexible_server.fs.administrator_login}:${azurerm_postgresql_flexible_server.fs.administrator_password}@${azurerm_postgresql_flexible_server.fs.fqdn}:5432/postgres"
   description = "PostgreSQL connection string"
+  sensitive = true
 }
 
 # ACR Outputs
@@ -34,4 +36,5 @@ output "acr_username" {
 output "acr_password" {
   value       = azurerm_container_registry.acr.admin_password
   description = "ACR admin password"
+  sensitive = true
 }
