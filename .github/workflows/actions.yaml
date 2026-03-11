@@ -105,6 +105,13 @@ jobs:
             --from-literal=AZURE_OPENAI_DEPLOYMENT="${{ secrets.AZURE_OPENAI_DEPLOYMENT }}" \
             --dry-run=client -o yaml | kubectl apply -f -
 
+      - name: Create Grafana Secrets
+        run: |
+          kubectl create secret generic grafana-secrets \
+              --namespace=monitoring \
+              --from-literal=admin-user="${{ secrets.GRAFANA_ADMIN_USER }}" \
+              --from-literal=admin-password="${{ secrets.GRAFANA_ADMIN_PASSWORD }}" \
+              --dry-run=client -o yaml | kubectl apply -f -
 
       - name: Replace image placeholder and deploy
         run: |
