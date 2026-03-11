@@ -105,6 +105,10 @@ jobs:
             --from-literal=AZURE_OPENAI_DEPLOYMENT="${{ secrets.AZURE_OPENAI_DEPLOYMENT }}" \
             --dry-run=client -o yaml | kubectl apply -f -
 
+      - name: Create monitoring namespace
+        run: |
+          kubectl create namespace monitoring --dry-run=client -o yaml | kubectl apply -f -
+
       - name: Create Grafana Secrets
         run: |
           kubectl create secret generic grafana-secrets \
