@@ -24,6 +24,11 @@ git push
 ```
 
 Wait for the CI/CD pipeline to deploy the updated API.
+Once deployed run this command to sync kubectl with aks
+
+```bash
+az aks get-credentials --resource-group <rg-with-aks> --name aks-cluster --overwrite-existing
+```
 
 ### Step 2: Verify /metrics endpoint works
 
@@ -50,6 +55,7 @@ kubectl apply -f k8s/monitoring/prometheus-rbac.yaml
 ### Step 4: Deploy Prometheus
 
 ```bash
+kubectl apply -f k8s/monitoring/prometheus-rbac.yaml
 kubectl apply -f k8s/monitoring/prometheus-config.yaml
 kubectl apply -f k8s/monitoring/prometheus-deployment.yaml
 ```
@@ -82,8 +88,9 @@ kubectl get svc grafana -n monitoring
 Open `http://<EXTERNAL-IP>` in your browser.
 
 **Default credentials:**
-- Username: `admin`
-- Password: `admin`
+These are values put into your GitHub actions.
+- Username: `GRAFANA_ADMIN_USERNAME`
+- Password: `GRAFANA_ADMIN_PASSWORD`
 
 ### Step 7: View the Dashboard
 
