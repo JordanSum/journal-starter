@@ -95,29 +95,19 @@ jobs:
           resource-group: ${{ secrets.AZURE_RESOURCE_GROUP }}
           cluster-name: ${{ secrets.AKS_CLUSTER_NAME }}
 
-      - name: Create Kubernetes secrets
-        run: |
-          kubectl create secret generic journal-api-secrets \
-            --from-literal=DATABASE_URL="${{ secrets.DATABASE_URL }}" \
-            --from-literal=OPENAI_API_KEY="${{ secrets.OPENAI_API_KEY }}" \
-            --from-literal=AZURE_OPENAI_API_KEY="${{ secrets.AZURE_OPENAI_API_KEY }}" \
-            --from-literal=AZURE_OPENAI_ENDPOINT="${{ secrets.AZURE_OPENAI_ENDPOINT }}" \
-            --from-literal=AZURE_OPENAI_DEPLOYMENT="${{ secrets.AZURE_OPENAI_DEPLOYMENT }}" \
-            --dry-run=client -o yaml | kubectl apply -f -
-
       - name: Create monitoring namespace
         run: |
           kubectl create namespace monitoring --dry-run=client -o yaml | kubectl apply -f -
-
-      - name: Create Grafana Secrets
-        run: |
-          kubectl create secret generic grafana-secrets \
-              --namespace=monitoring \
-              --from-literal=admin-user="${{ secrets.GRAFANA_ADMIN_USER }}" \
-              --from-literal=admin-password="${{ secrets.GRAFANA_ADMIN_PASSWORD }}" \
-              --dry-run=client -o yaml | kubectl apply -f -
 
       - name: Replace image placeholder and deploy
         run: |
           sed -i 's|IMAGE_PLACEHOLDER|${{ secrets.ACR_LOGIN_SERVER }}/journal-api:${{ github.sha }}|g' k8s/deployment.yaml
           kubectl apply -f k8s/
+
+      - name: Deploy Key Vault SecretProviderClasses
+        run: |
+          envsubst < k8s/secrets.yaml | kubectl apply -f -
+          envsubst < k8s/monitoring/secrets.yaml | kubectl apply -f -
+        env:
+          KEYVAULT_NAME: ${{ secrets.KEYVAULT_NAME }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}

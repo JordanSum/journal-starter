@@ -42,6 +42,9 @@ spec:
               mountPath: /var/lib/grafana/dashboards
             - name: storage
               mountPath: /var/lib/grafana
+            - name: secrets-store
+              mountPath: "/mnt/secrets-store"
+              readOnly: true
           resources:
             requests:
               cpu: "100m"
@@ -61,6 +64,12 @@ spec:
             name: grafana-dashboards
         - name: storage
           emptyDir: {}
+        - name: secrets-store
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: grafana-keyvault-secrets
 ---
 apiVersion: v1
 kind: Service
