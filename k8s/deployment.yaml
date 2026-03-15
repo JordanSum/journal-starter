@@ -45,21 +45,14 @@ spec:
             port: 8000
           initialDelaySeconds: 15
           periodSeconds: 20
-      spec:
-  containers:
-  - name: journal-api
-    image: IMAGE_PLACEHOLDER
-    envFrom:
-    - secretRef:
-        name: journal-api-secrets
-    volumeMounts:
-    - name: secrets-store
-      mountPath: "/mnt/secrets-store"
-      readOnly: true
-  volumes:
-  - name: secrets-store
-    csi:
-      driver: secrets-store.csi.k8s.io
-      readOnly: true
-      volumeAttributes:
-        secretProviderClass: azure-keyvault-secrets
+        volumeMounts:
+        - name: secrets-store
+          mountPath: "/mnt/secrets-store"
+          readOnly: true
+      volumes:
+      - name: secrets-store
+        csi:
+          driver: secrets-store.csi.k8s.io
+          readOnly: true
+          volumeAttributes:
+            secretProviderClass: azure-keyvault-secrets
