@@ -12,6 +12,12 @@ Open a terminal and run these commands one by one. Save each output — you'll n
 az account show --query id --output tsv
 ```
 
+Delete the old app registration if one exists
+
+```bash
+az ad app list --display-name "github-actions-sp" --query "[].appId" -o tsv | xargs -I {} az ad app delete --id {}
+```
+
 Add to the github actions sp
 
 Add AZURE_CREDENTIALS to the GitHub actions web page, will not work through CLI.
