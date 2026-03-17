@@ -18,6 +18,13 @@ resource "azurerm_subnet" "subnet" {
   service_endpoints    = ["Microsoft.Storage"]
 }
 
+resource "azurerm_subnet" "aks_subnet" {
+  name                 = "aks-subnet"
+  resource_group_name  = azurerm_resource_group.rg.name
+  virtual_network_name = azurerm_virtual_network.l2c-vnet.name
+  address_prefixes     = ["10.0.4.0/22"]
+}
+
 resource "azurerm_subnet" "private_endpoints" {
   name                 = "private-endpoints-subnet"
   resource_group_name  = azurerm_resource_group.rg.name
@@ -78,6 +85,13 @@ resource "azurerm_kubernetes_cluster" "aks-cluster" {
     name       = "default"
     node_count = 1
     vm_size    = "Standard_DS2_v2"
+    vnet_subnet_id = azurerm_subnet.aks_subnet.id
+  }
+
+  network_profile {
+    network_plugin = "azure"
+    service_cidr = "10.1.0.0/16"
+    dns_service_ip = "10.1.0.10"
   }
 
   identity {
