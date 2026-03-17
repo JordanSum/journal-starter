@@ -1,0 +1,31 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: db-setup
+  annotations:
+    "helm.sh/hook": pre-install
+spec:
+  ttlSecondsAfterFinished: 300
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: db-setup
+          image: postgres:15
+          command: ["psql", "$(DATABSE_URL)", "-c"]
+          args:
+            - |
+              CREATE TABLE IF NOT EXISTS entries (
+                id VARCHAR PRIMARY KEY,
+                data JSONB NOT NULL,
+                created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+                updated_at TIMESTAMP WITH TIME ZONE NOT NULL
+              );
+              CREATE INDEX IF NOT EXISTS idx_entries_created_at ON entries(created_at);
+              CREATE INDEX IF NOT EXISTS idx_entries_data_gin ON entries USING GIN (data);
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: journal-api-secrets
+                  key: DATABASE_URL

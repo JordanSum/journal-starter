@@ -75,6 +75,13 @@ Azure AKS Cluster Name - Refer to infra/main.tf
 az keyvault list --resource-group <rg-name> --query "[0].name" -o tsv
 ```
 
+## Key Vault PostgreSQL secret
+
+```bash
+az keyvault secret set --vault-name l2c-kv --name DATABASE-URL \
+  --value "postgresql://<username>:<password>@<SERVER-name>.postgres.database.azure.com:5432/<DATABASE_name?sslmode=require"
+```
+
 ## AZURE_TENANT_ID
 
 ```bash

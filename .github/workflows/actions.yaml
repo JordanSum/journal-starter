@@ -126,6 +126,7 @@ jobs:
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
           AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          AKS_KUBELET_CLIENT_ID: ${{ secrets.AKS_KUBELET_CLIENT_ID }}
 
       - name: Replace image placeholder and deploy
         run: |
@@ -138,3 +139,7 @@ jobs:
       - name: Deploy monitoring stack
         run: |
           kubectl apply -f k8s/monitoring/
+
+      - name: Run database setup
+        run: |
+          kubectl apply -f k8s/db-setup-job.yaml

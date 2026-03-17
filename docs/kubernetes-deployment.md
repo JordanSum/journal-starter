@@ -1,7 +1,7 @@
 # 1. Connect to AKS
 
 ```bash
-az aks get-credentials --resource-group l2c-rg --name aks-cluster --overwrite-existing
+az aks get-credentials --resource-group <rg-name> --name <aks-name> --overwrite-existing
 ```
 
 # 2. Create monitoring namespace
