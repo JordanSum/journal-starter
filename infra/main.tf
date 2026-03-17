@@ -16,20 +16,39 @@ resource "azurerm_subnet" "subnet" {
   virtual_network_name = azurerm_virtual_network.l2c-vnet.name
   address_prefixes     = ["10.0.2.0/24"]
   service_endpoints    = ["Microsoft.Storage"]
-  delegation {
-    name = "fs"
-    service_delegation {
-      name = "Microsoft.DBforPostgreSQL/flexibleServers"
-      actions = [
-        "Microsoft.Network/virtualNetworks/subnets/join/action",
-      ]
-    }
-  }
 }
+
+resource "azurerm_subnet" "private_endpoints" {
+  name                 = "private-endpoints-subnet"
+  resource_group_name  = azurerm_resource_group.rg.name
+  virtual_network_name = azurerm_virtual_network.l2c-vnet.name
+  address_prefixes     = ["10.0.3.0/24"]
+}
+
 resource "azurerm_private_dns_zone" "private-dns" {
-  name                = "privatedns.postgres.database.azure.com"
+  name                = "privatelink.postgres.database.azure.com"  # Updated for private endpoint
   resource_group_name = azurerm_resource_group.rg.name
 }
+
+resource "azurerm_private_endpoint" "postgres_pe" {
+  name                = "l2c-psql-pe"
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  subnet_id           = azurerm_subnet.private_endpoints.id
+
+  private_service_connection {
+    name                           = "postgres-privateserviceconnection"
+    private_connection_resource_id = azurerm_postgresql_flexible_server.fs.id
+    is_manual_connection           = false
+    subresource_names              = ["postgresqlServer"]
+  }
+
+  private_dns_zone_group {
+    name                 = "postgres-dns-zone-group"
+    private_dns_zone_ids = [azurerm_private_dns_zone.private-dns.id]
+  }
+}
+
 
 resource "azurerm_private_dns_zone_virtual_network_link" "dns-zone-link" {
   name                  = "l2cprivateDnsZone.com"
@@ -79,7 +98,7 @@ resource "azurerm_postgresql_flexible_server" "fs" {
   resource_group_name           = azurerm_resource_group.rg.name
   location                      = azurerm_resource_group.rg.location
   version                       = "15"
-  public_network_access_enabled = true
+  public_network_access_enabled = false
   administrator_login           = var.psqlusername
   administrator_password        = var.psqlpassword
 
@@ -95,11 +114,4 @@ resource "azurerm_postgresql_flexible_server_database" "db" {
     server_id = azurerm_postgresql_flexible_server.fs.id
     collation = "en_US.utf8"
     charset = "UTF8"
-}
-
-resource "azurerm_postgresql_flexible_server_firewall_rule" "allow_pip" {
-  name                = "allow_pip"
-  server_id         = azurerm_postgresql_flexible_server.fs.id
-  start_ip_address    = var.pip
-  end_ip_address      = var.pip
 }
