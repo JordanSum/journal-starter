@@ -1,0 +1,25 @@
+# NGINX Ingress Controller values for Azure AKS
+# Install: helm install ingress-nginx ingress-nginx/ingress-nginx \
+#            -n ingress-nginx --create-namespace \
+#            -f k8s/helm/ingress-nginx-values.yaml
+
+controller:
+  service:
+    annotations:
+      # Required for Azure Load Balancer health probes
+      service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: /healthz
+  
+  # Optional: resource limits
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+  # Enable metrics for Prometheus scraping
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: false  # Set to true if using Prometheus Operator

@@ -182,7 +182,6 @@ credentials.json
 *.key
 
 # Local notes with sensitive info
-github-azure-connection.md
 github-azure-connection.txt
 
 # IDE
@@ -191,3 +190,4 @@ github-azure-connection.txt
 
 # macOS
 .DS_Store
+obj/diagram.drawio.png

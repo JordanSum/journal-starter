@@ -1,6 +1,6 @@
-#--------------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------------------------
 # Create a workflow file in .github/workflows/ that automatically builds your application and runs tests on every push to the main branch.
-#--------------------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------------------------------------
 name: CI
 
 on:
@@ -9,9 +9,11 @@ on:
 
 jobs:
   # Job 1: Test - Run linting and tests with PostgreSQL service container
+  # Note: The PostgreSQL service is configured to be available for the duration of the job, and the application can connect to it using the provided environment variable.
+  # The job will first check out the code, set up Python, install dependencies, run linting, set up the database, and then execute the tests.
   test:
     runs-on: ubuntu-latest
-
+  # Use a service container for PostgreSQL to ensure the database is available during testing. The application can connect to it using the DATABASE_URL environment variable.
     services:
       postgres:
         image: postgres:15
@@ -29,7 +31,7 @@ jobs:
 
     env:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
-
+  # The steps for this job include checking out the code, setting up Python, installing dependencies, running linting, setting up the database, and executing tests.
     steps:
       - uses: actions/checkout@v4
 
@@ -58,16 +60,17 @@ jobs:
   build-push:
     runs-on: ubuntu-latest
     needs: test
-
+  # The steps for this job include checking out the code, logging into Azure, logging into ACR, building the Docker image, tagging it, and pushing it to ACR.
     steps:
       - uses: actions/checkout@v4
 
-      - name: Login to ACR
-        uses: azure/docker-login@v1
+      - name: Azure Login
+        uses: azure/login@v2
         with:
-          login-server: ${{ secrets.ACR_LOGIN_SERVER }}
-          username: ${{ secrets.ACR_USERNAME }}
-          password: ${{ secrets.ACR_PASSWORD }}
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Login to ACR
+        run: az acr login --name ${{ secrets.ACR_NAME }}
 
       - name: Build and push Docker image
         run: |
@@ -80,7 +83,8 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: build-push
-
+  # The steps for this job include checking out the code, logging into Azure, setting the AKS context, creating a monitoring namespace, replacing 
+  # the image placeholder in the Kubernetes deployment file, applying the deployment, and deploying Key Vault SecretProviderClasses.
     steps:
       - uses: actions/checkout@v4
 
@@ -95,14 +99,23 @@ jobs:
           resource-group: ${{ secrets.AZURE_RESOURCE_GROUP }}
           cluster-name: ${{ secrets.AKS_CLUSTER_NAME }}
 
+      - name: Install Helm charts (ingress-nginx & cert-manager)
+        run: |
+          helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+          helm repo add jetstack https://charts.jetstack.io
+          helm repo update
+          
+          helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx \
+            -n ingress-nginx --create-namespace \
+            -f k8s/helm/ingress-nginx-values.yaml --wait
+          
+          helm upgrade --install cert-manager jetstack/cert-manager \
+            -n cert-manager --create-namespace \
+            -f k8s/helm/cert-manager-values.yaml --wait
+
       - name: Create monitoring namespace
         run: |
           kubectl create namespace monitoring --dry-run=client -o yaml | kubectl apply -f -
-
-      - name: Replace image placeholder and deploy
-        run: |
-          sed -i 's|IMAGE_PLACEHOLDER|${{ secrets.ACR_LOGIN_SERVER }}/journal-api:${{ github.sha }}|g' k8s/deployment.yaml
-          kubectl apply -f k8s/
 
       - name: Deploy Key Vault SecretProviderClasses
         run: |
@@ -111,3 +124,17 @@ jobs:
         env:
           KEYVAULT_NAME: ${{ secrets.KEYVAULT_NAME }}
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+
+      - name: Replace image placeholder and deploy
+        run: |
+          sed -i 's|IMAGE_PLACEHOLDER|${{ secrets.ACR_LOGIN_SERVER }}/journal-api:${{ github.sha }}|g' k8s/deployment.yaml
+          kubectl apply -f k8s/deployment.yaml
+          kubectl apply -f k8s/service.yaml
+          kubectl apply -f k8s/ingress.yaml
+          kubectl apply -f k8s/cluster-issuer.yaml
+
+      - name: Deploy monitoring stack
+        run: |
+          kubectl apply -f k8s/monitoring/

@@ -1,0 +1,23 @@
+# cert-manager values
+# Install: helm install cert-manager jetstack/cert-manager \
+#            -n cert-manager --create-namespace \
+#            -f k8s/helm/cert-manager-values.yaml
+
+# Install CRDs with the chart
+crds:
+  enabled: true
+
+# Optional: resource limits
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: 200m
+    memory: 256Mi
+
+# Prometheus metrics
+prometheus:
+  enabled: true
+  servicemonitor:
+    enabled: false  # Set to true if using Prometheus Operator
