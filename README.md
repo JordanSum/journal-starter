@@ -18,7 +18,7 @@ Thanks!
 
 ## 🚀 Overview
 
-This project creates a journal API that creates, reads, updates, deletes daily entries into a Azure cloud PostgreSQL database. The Azure OpenAI analyszes the entries that are put into this database for sentiment, summaries, and topic extraction.
+This project is a journal API that creates, reads, updates, and deletes daily entries into an Azure cloud PostgreSQL database. The Azure OpenAI analyzes the entries added to this database for sentiment, summaries, and topic extraction.
 
 ## 🏗️ Architecture
 
