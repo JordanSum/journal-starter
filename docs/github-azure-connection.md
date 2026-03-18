@@ -6,21 +6,21 @@ After deploying your Azure infrastructure, follow these steps to connect your Gi
 
 Open a terminal and run these commands one by one. Save each output — you'll need them for GitHub.
 
+### Delete the old app registration if one exists
+
+```bash
+az ad app list --display-name "github-actions-sp" --query "[].appId" -o tsv | xargs -I {} az ad app delete --id {}
+```
+
 ### Get Azure Subscription ID
 
 ```bash
 az account show --query id --output tsv
 ```
 
-Delete the old app registration if one exists
+Get the sp information
 
-```bash
-az ad app list --display-name "github-actions-sp" --query "[].appId" -o tsv | xargs -I {} az ad app delete --id {}
-```
-
-Add to the github actions sp
-
-Add AZURE_CREDENTIALS to the GitHub actions web page, will not work through CLI.
+**Note** Add AZURE_CREDENTIALS to the GitHub actions web page, will not work through CLI, then run the following bash cammand.
 
 ```bash
 az ad sp create-for-rbac --name "github-actions-sp" \
@@ -31,7 +31,9 @@ az ad sp create-for-rbac --name "github-actions-sp" \
 
 Save the entire JSON output and put in the AZURE_CREDENTIALS in GitHub Secrets
 
-## Enable Key Vault CSI driver on your AKS cluster.
+## Enable Key Vault CSI driver on your AKS cluster. This will allow your Kubernetes cluster to talk to storage in your cloud provider including Key Vault
+
+**Note** Will need to run this bash command before running GitHub actions to connect to AKS cluster.
 
 ```bash
 az aks enable-addons \
@@ -45,7 +47,7 @@ az aks enable-addons \
 ## AKS_KUBELET_CLIENT_ID
 
 ```bash
-az aks show --resource-group <rg-name> --name aks-name --query "identityProfile.kubeletidentity.clientId" -o tsv
+az aks show --resource-group <rg-name> --name <aks-name> --query "identityProfile.kubeletidentity.clientId" -o tsv
 ```
 
 ## ACR_NAME

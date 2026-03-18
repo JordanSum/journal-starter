@@ -1,0 +1,9 @@
+---------------------------------------------------------------------------------------------------------------------
+**Copy and paste this template into your terraform.tfvars file to passalong keys to your variables in variables.tf.**
+---------------------------------------------------------------------------------------------------------------------
+
+subscription_id = "<subscription_id>"
+
+psqlusername = "<psqlusername>"
+
+psqlpassword = "<psqlpassword>"
