@@ -180,6 +180,7 @@ terraform.tfvars
 credentials.json
 *.pem
 *.key
+k8s/local/
 
 # Local notes with sensitive info
 github-azure-connection.txt

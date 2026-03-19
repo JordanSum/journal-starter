@@ -12,7 +12,7 @@ spec:
       containers:
         - name: db-setup
           image: postgres:15
-          command: ["psql", "$(DATABSE_URL)", "-c"]
+          command: ["psql", "$(DATABASE_URL)", "-c"]
           args:
             - |
               CREATE TABLE IF NOT EXISTS entries (

@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
       - name: journal-api
-        image: IMAGE_PLACEHOLDER
+        image: journal-api
         ports:
         - containerPort: 8000
         envFrom:

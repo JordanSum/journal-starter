@@ -96,6 +96,17 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+      - name: Grant AKS access to Key Vault
+        run: |
+          KUBELET_OBJECT_ID=$(az aks show \
+            --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
+            --name ${{ secrets.AKS_CLUSTER_NAME }} \
+            --query "identityProfile.kubeletidentity.objectId" -o tsv)
+          az keyvault set-policy \
+            --name ${{ secrets.KEYVAULT_NAME }} \
+            --object-id $KUBELET_OBJECT_ID \
+            --secret-permissions get list
+
       - name: Set AKS context
         uses: azure/aks-set-context@v3
         with:
@@ -133,7 +144,7 @@ jobs:
 
       - name: Replace image placeholder and deploy
         run: |
-          sed -i 's|IMAGE_PLACEHOLDER|${{ secrets.ACR_LOGIN_SERVER }}/journal-api:${{ github.sha }}|g' k8s/deployment.yaml
+          sed -i 's|image: journal-api|image: ${{ secrets.ACR_LOGIN_SERVER }}/journal-api:${{ github.sha }}|g' k8s/deployment.yaml
           kubectl apply -f k8s/deployment.yaml
           kubectl apply -f k8s/service.yaml
           kubectl apply -f k8s/ingress.yaml
