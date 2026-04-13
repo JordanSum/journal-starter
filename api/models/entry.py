@@ -1,8 +1,17 @@
 from datetime import UTC, datetime
 from uuid import uuid4
 
-from pydantic import BaseModel, Field, field_validator
+from typing import Annotated
+from pydantic import BaseModel, Field, field_validator, StringConstraints
 
+
+JournalField = Annotated[
+    str,
+    StringConstraints(
+        max_length=256,
+        strip_whitespace=True,
+    )
+]
 
 class AnalysisResponse(BaseModel):
     """Response model for journal entry analysis."""
@@ -18,18 +27,15 @@ class AnalysisResponse(BaseModel):
 
 class EntryCreate(BaseModel):
     """Model for creating a new journal entry (user input)."""
-    work: str = Field(
-        max_length=256,
+    work: JournalField = Field(
         description="What did you work on today?",
         json_schema_extra={"example": "Studied FastAPI and built my first API endpoints"}
     )
-    struggle: str = Field(
-        max_length=256,
+    struggle: JournalField = Field(
         description="What's one thing you struggled with today?",
         json_schema_extra={"example": "Understanding async/await syntax and when to use it"}
     )
-    intention: str = Field(
-        max_length=256,
+    intention: JournalField = Field(
         description="What will you study/work on tomorrow?",
         json_schema_extra={"example": "Practice PostgreSQL queries and database design"}
     )
@@ -53,19 +59,16 @@ class Entry(BaseModel):
         default_factory=lambda: str(uuid4()),
         description="Unique identifier for the entry (UUID)."
     )
-    work: str = Field(
+    work: JournalField = Field(
         ...,
-        max_length=256,
         description="What did you work on today?"
     )
-    struggle: str = Field(
+    struggle: JournalField = Field(
         ...,
-        max_length=256,
         description="What’s one thing you struggled with today?"
     )
-    intention: str = Field(
+    intention: JournalField = Field(
         ...,
-        max_length=256,
         description="What will you study/work on tomorrow?"
     )
     created_at: datetime | None = Field(
