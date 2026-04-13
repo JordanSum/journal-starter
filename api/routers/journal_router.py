@@ -2,7 +2,7 @@ from collections.abc import AsyncGenerator
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from api.models.entry import Entry, EntryCreate
+from api.models.entry import Entry, EntryCreate, EntryUpdate
 from api.repositories.postgres_repository import PostgresDB
 from api.services import llm_service
 from api.services.entry_service import EntryService
@@ -50,9 +50,18 @@ async def get_entry(entry_id: str, entry_service: EntryService = Depends(get_ent
     return result
 
 @router.patch("/entries/{entry_id}")
-async def update_entry(entry_id: str, entry_update: dict, entry_service: EntryService = Depends(get_entry_service)):
+async def update_entry(
+    entry_id: str, 
+    entry_update: EntryUpdate, 
+    entry_service: EntryService = Depends(get_entry_service)
+):
     """Update a journal entry"""
-    result = await entry_service.update_entry(entry_id, entry_update)
+    update_data = entry_update.model_dump(exclude_unset=True)
+
+    if not update_data:
+        raise HTTPException(status_code=400, detail="No fields provided for update")
+
+    result = await entry_service.update_entry(entry_id, update_data)
     if not result:
 
         raise HTTPException(status_code=404, detail="Entry not found")
