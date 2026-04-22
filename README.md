@@ -1,6 +1,6 @@
 # Journal API
 
-Welcome to my forked Learn to Cloud repository to deploy a journal API.  Here you will find everything nessecary to deploy this web FastAPI kubernetes cluster to Azure cloud using IaC. This project deployes a FastAPI + PostgreSQL application for tracking daily learning progress, deployed on Azure Kubernetes Service (AKS). Some key services this project uses in Azure are Key Vault, Azure Container Registry, Azure Kubernetes Cluster, Virtual Network, PostgreSQL server/database, and Azure OpenAI. Pleae remember to study, learn, and apply, but most importantly have fun!
+Welcome to my forked Learn to Cloud repository to deploy a journal API.  Here you will find everything nessecary to deploy this web FastAPI kubernetes cluster to Azure cloud using IaC. This project deployes a FastAPI + PostgreSQL application for tracking daily learning progress, deployed on Azure Kubernetes Service (AKS). Some key services this project uses in Azure are Key Vault, Azure Container Registry, Azure Kubernetes Cluster, Virtual Network, PostgreSQL server/database, and Azure OpenAI. Please remember to study, apply, and learn but most importantly have fun!
 
 Thanks!
 
