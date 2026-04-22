@@ -16,11 +16,11 @@ Thanks!
 - [Contributing](#contributing)
 - [License](#license)
 
-## 🚀 Overview
+## Overview
 
 This project is a journal API that creates, reads, updates, and deletes daily entries into an Azure cloud PostgreSQL database. The Azure OpenAI analyzes the entries added to this database for sentiment, summaries, and topic extraction.
 
-## 🏗️ Architecture
+## Architecture
 
 <img src="obj/diagram.drawio.png" alt="Alt text" width="900">
 
@@ -47,7 +47,7 @@ This project is a journal API that creates, reads, updates, and deletes daily en
 - Helm 3
 - GitHub CLI (`gh` and/or `git`)
 
-## 💻 Local Development
+## Local Development
 
 See the [Capstone Development Guide](docs/capstone-guide.md) for detailed local development instructions.
 
@@ -70,7 +70,7 @@ code .
 # Visit http://localhost:8000/docs
 ```
 
-## ☁️ Cloud Deployment
+## Cloud Deployment
 
 ### Step 1: Deploy Azure Infrastructure
 
